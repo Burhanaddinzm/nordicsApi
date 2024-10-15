@@ -13,17 +13,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
-  username  String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime?
-}
-
 enum Role {
   USER
   ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  carts     Cart[]
+
+  @@index([username])
+  @@index([createdAt])
+}
+
+model Product {
+  id               Int        @id @default(autoincrement())
+  isDeleted        Boolean    @default(false)
+  name             String
+  price            Decimal    @db.Decimal(10, 2)
+  image            String
+  carts            Cart[]
+  carouselSettings Settings[] @relation("CarouselProducts")
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  isDeleted Boolean  @default(false)
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model Settings {
+  id               Int       @id @default(autoincrement())
+  carouselProducts Product[] @relation("CarouselProducts")
+  aboutText        String
+  updatedAt        DateTime  @updatedAt
 }
