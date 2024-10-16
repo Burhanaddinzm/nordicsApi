@@ -35,7 +35,10 @@ const getProductById = async (req, res, next) => {
 
 const createProduct = async (req, res, next) => {
   try {
-    const product = await productService.createProduct(req.body);
+    const body = req.body;
+    const file = req.file;
+
+    const product = await productService.createProduct(body, file);
 
     res.status(201).json({
       status: 201,

@@ -9,7 +9,7 @@ const productRoutes = require("./routes/productRoutes");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);

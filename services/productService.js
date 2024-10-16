@@ -26,19 +26,17 @@ const getProductById = async (id) => {
   return product;
 };
 
-const createProduct = async (productData) => {
+const createProduct = async (productData, productImage) => {
   const { name, price } = productData;
 
-  const file = productData.file;
-  const imagePath = `/uploads/${file.filename}`;
-
-  if (!file) {
-    throwErrorWithStatusCode(400, "Product image is required.");
+  if (!productImage) {
+    throwErrorWithStatusCode(400, "Image is required");
   }
+  const imagePath = `/uploads/${productImage.filename}`;
 
   const product = {
     name,
-    price,
+    price: parseFloat(price),
     image: imagePath,
     createdAt: getAzTime(),
   };
