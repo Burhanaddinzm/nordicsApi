@@ -19,6 +19,6 @@ app.use("/api/auth", authRoutes);
 // });
 
 app.all("*", (req, res) => res.sendStatus(404));
+app.use("/uploads", express.static("uploads"));
 app.use(errorHandlingMiddleware);
-
 app.listen(PORT, () => console.log(`Server is listening on PORT ${PORT}...`));

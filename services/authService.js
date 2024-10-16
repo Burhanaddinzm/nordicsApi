@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
 const { PrismaClient } = require("@prisma/client");
 const { generateToken } = require("../utils/tokenUtils");
+const { getAzTime } = require("../utils/dateTimeUtils");
+const { throwErrorWithStatusCode } = require("../utils/errorUtils");
 
 const prisma = new PrismaClient();
 
@@ -9,26 +11,18 @@ const registerUser = async (userData) => {
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
-    const error = new Error("User already exists");
-    error.statusCode = 400;
-
-    throw error;
+    throwErrorWithStatusCode(400, "User already exists");
   }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-
-  //Datetime stuff
-  const now = new Date();
-  const utcNow = new Date(now.toUTCString());
-  const azTime = new Date(utcNow.getTime() + 4 * 60 * 60 * 1000);
 
   const user = await prisma.user.create({
     data: {
       username: username,
       email: email,
       password: hashedPassword,
-      createdAt: azTime,
+      createdAt: getAzTime(),
     },
   });
 
@@ -40,18 +34,12 @@ const authenticateUser = async (userData) => {
 
   const user = await getUserByEmail(email);
   if (!user) {
-    const error = new Error("Invalid credentials");
-    error.statusCode = 401;
-
-    throw error;
+    throwErrorWithStatusCode(401, "Invalid credentials");
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    const error = new Error("Invalid credentials");
-    error.statusCode = 401;
-
-    throw error;
+    throwErrorWithStatusCode(401, "Invalid credentials");
   }
 
   return generateToken(user);
