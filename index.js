@@ -4,6 +4,7 @@ const express = require("express");
 const errorHandlingMiddleware = require("./middlewares/errorHandlingMiddleware");
 
 const authRoutes = require("./routes/authRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
 // const authenticate = require("../middlewares/authenticationMiddleware");
 // const authorize = require("../middlewares/authorizationMiddleware");

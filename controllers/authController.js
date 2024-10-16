@@ -6,7 +6,7 @@ const register = async (req, res, next) => {
 
     res
       .status(201)
-      .json({ status: 201, message: "User created successfully", user });
+      .json({ status: 201, message: "User created successfully", data: user });
   } catch (error) {
     next(error);
   }
