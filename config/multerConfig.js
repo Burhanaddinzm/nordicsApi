@@ -2,6 +2,12 @@ const multer = require("multer");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
+const { lookup } = require("mime-types");
+
+const maxFileSize = Number(process.env.MAX_FILE_SIZE);
+const allowedFileTypes = process.env.FILE_TYPES.split(",").map((type) =>
+  type.trim()
+);
 
 const uploadDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -19,18 +25,22 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+  const allowedMimeTypes = allowedFileTypes.map((type) => lookup(type));
 
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Invalid file type. Only JPEG, PNG and GIF are allowed"));
+    cb(
+      new Error(
+        `Invalid file type. Only ${allowedFileTypes.join(", ")} are allowed`
+      )
+    );
   }
 };
 
 const upload = multer({
   storage,
-  limits: { fieldSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: maxFileSize * 1024 * 1024 }, // MB
   fileFilter: fileFilter,
 });
 

@@ -8,14 +8,33 @@ const getAllProducts = async () => {
     where: {
       isDeleted: false,
     },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      image: true,
+      createdAt: true,
+    },
   });
 };
 
 const getProductById = async (id) => {
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    throwErrorWithStatusCode(400, "Invalid ID format");
+  }
+
   const product = await prisma.product.findUnique({
     where: {
       id: Number(id),
       isDeleted: false,
+    },
+    select: {
+      id: true,
+      name: true,
+      price: true,
+      image: true,
+      createdAt: true,
     },
   });
 

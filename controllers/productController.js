@@ -39,11 +39,12 @@ const createProduct = async (req, res, next) => {
     const file = req.file;
 
     const product = await productService.createProduct(body, file);
+    const { id, name, price, image, createdAt } = product;
 
     res.status(201).json({
       status: 201,
       message: "Product created successfully",
-      data: product,
+      data: { id, name, price, image, createdAt },
     });
   } catch (error) {
     next(error);
