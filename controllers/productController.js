@@ -5,7 +5,10 @@ const getAllProducts = async (req, res, next) => {
     const products = await productService.getAllProducts();
 
     if (products.length === 0) {
-      res.status(404).json({ status: 404, message: "Products not found" });
+      return res.status(404).json({
+        status: 404,
+        message: "Products not found",
+      });
     }
 
     res.status(200).json({
@@ -53,6 +56,18 @@ const createProduct = async (req, res, next) => {
 
 const updateProduct = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    const body = req.body;
+    const file = req.file;
+
+    const product = await productService.updateProduct({ id, ...body }, file);
+    const { name, price, image, updatedAt } = product;
+
+    res.status(200).json({
+      status: 200,
+      message: "Product updated successfully",
+      data: { id, name, price, image, updatedAt },
+    });
   } catch (error) {
     next(error);
   }
@@ -60,6 +75,13 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
   try {
+    const { id } = req.params;
+    await productService.deleteProduct(id);
+
+    res.status(204).json({
+      status: 204,
+      message: "Product deleted successfully",
+    });
   } catch (error) {
     next(error);
   }

@@ -1,6 +1,9 @@
 const express = require("express");
 const productController = require("../controllers/productController");
-const { createValidationRules } = require("../validations/productValidation");
+const {
+  createValidationRules,
+  updateValidationRules,
+} = require("../validations/productValidation");
 const validate = require("../middlewares/validationMiddleware");
 const uploadMiddleware = require("../middlewares/uploadMiddleware");
 
@@ -17,5 +20,15 @@ router.post(
   validate,
   productController.createProduct
 );
+
+router.put(
+  "/update/:id",
+  uploadMiddleware,
+  updateValidationRules(),
+  validate,
+  productController.updateProduct
+);
+
+router.delete("/delete/:id", productController.deleteProduct);
 
 module.exports = router;

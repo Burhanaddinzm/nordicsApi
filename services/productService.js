@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { getAzTime } = require("../utils/dateTimeUtils");
 const { throwErrorWithStatusCode } = require("../utils/errorUtils");
+const { deleteImage } = require("../utils/fileUtils");
 
 const getAllProducts = async () => {
   return await prisma.product.findMany({
@@ -65,10 +66,54 @@ const createProduct = async (productData, productImage) => {
   });
 };
 
+const updateProduct = async (productData, productImage) => {
+  const { id, name, price, image } = productData;
+
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    throwErrorWithStatusCode(400, "Invalid ID format");
+  }
+
+  const oldProduct = await getProductById(Number(id));
+  if (!oldProduct) throwErrorWithStatusCode(404, "Product not found");
+
+  const product = {
+    name,
+    price: parseFloat(price),
+    updatedAt: getAzTime(),
+  };
+
+  if (productImage) {
+    deleteImage(image);
+    const imagePath = `/uploads/${productImage.filename}`;
+    product.image = imagePath;
+  }
+
+  return await prisma.product.update({
+    where: { id: Number(id), isDeleted: false },
+    data: product,
+  });
+};
+
+const deleteProduct = async (id) => {
+  const parsedId = parseInt(id, 10);
+  if (isNaN(parsedId)) {
+    throwErrorWithStatusCode(400, "Invalid ID format");
+  }
+
+  const oldProduct = await getProductById(Number(id));
+  if (!oldProduct) throwErrorWithStatusCode(404, "Product not found");
+
+  await prisma.product.update({
+    where: { id: Number(id), isDeleted: false },
+    data: { isDeleted: true },
+  });
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
-  // updateProduct,
-  // deleteProduct,
+  updateProduct,
+  deleteProduct,
 };
