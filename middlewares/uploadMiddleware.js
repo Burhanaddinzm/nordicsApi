@@ -16,7 +16,13 @@ const uploadMiddleware = (req, res, next) => {
       return res.status(400).json({ status: 400, message: err.message });
     }
 
-    if (!req.file && !req.originalUrl.includes("/api/products/update")) {
+    notRequiredEndpoints = ["/api/products/update"];
+
+    if (!req.file) {
+      for (const endpoint of notRequiredEndpoints) {
+        if (req.originalUrl.includes(endpoint)) return next();
+      }
+
       return res.status(400).json({
         status: 400,
         message: "No file uploaded or file type not allowed",

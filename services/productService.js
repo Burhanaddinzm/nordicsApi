@@ -110,10 +110,47 @@ const deleteProduct = async (id) => {
   });
 };
 
+const seedProducts = async () => {
+  if (!(await isTableEmpty())) return false;
+
+  const products = [
+    {
+      name: "Placeholder Product1",
+      price: 0.01,
+      image: "/uploads/placeholder.jpg",
+      createdAt: getAzTime(),
+    },
+    {
+      name: "Placeholder Product2",
+      price: 0.01,
+      image: "/uploads/placeholder.jpg",
+      createdAt: getAzTime(),
+    },
+    {
+      name: "Placeholder Product3",
+      price: 0.01,
+      image: "/uploads/placeholder.jpg",
+      createdAt: getAzTime(),
+    },
+  ];
+
+  await prisma.product.createMany({ data: products });
+  return true;
+};
+
+const isTableEmpty = async () => {
+  const product = await prisma.product.findFirst({
+    where: { isDeleted: false },
+  });
+
+  return product === null ? true : false;
+};
+
 module.exports = {
   getAllProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  seedProducts,
 };
