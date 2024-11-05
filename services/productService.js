@@ -27,7 +27,7 @@ const getProductById = async (id) => {
 
   const product = await prisma.product.findUnique({
     where: {
-      id: Number(id),
+      id: parseInt(id),
       isDeleted: false,
     },
     select: {
@@ -74,7 +74,7 @@ const updateProduct = async (productData, productImage) => {
     throwErrorWithStatusCode(400, "Invalid ID format");
   }
 
-  const existingProduct = await getProductById(Number(id));
+  const existingProduct = await getProductById(parseInt(id));
   if (!existingProduct) throwErrorWithStatusCode(404, "Product not found");
 
   const product = {
@@ -90,7 +90,7 @@ const updateProduct = async (productData, productImage) => {
   }
 
   return await prisma.product.update({
-    where: { id: Number(id), isDeleted: false },
+    where: { id: parseInt(id), isDeleted: false },
     data: product,
   });
 };
@@ -101,11 +101,11 @@ const deleteProduct = async (id) => {
     throwErrorWithStatusCode(400, "Invalid ID format");
   }
 
-  const existingProduct = await getProductById(Number(id));
+  const existingProduct = await getProductById(parseInt(id));
   if (!existingProduct) throwErrorWithStatusCode(404, "Product not found");
 
   await prisma.product.update({
-    where: { id: Number(id), isDeleted: false },
+    where: { id: parseInt(id), isDeleted: false },
     data: { isDeleted: true },
   });
 };

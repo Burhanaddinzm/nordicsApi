@@ -4,9 +4,11 @@ const register = async (req, res, next) => {
   try {
     const user = await authService.registerUser(req.body);
 
-    res
-      .status(201)
-      .json({ status: 201, message: "User created successfully", data: user });
+    res.status(201).json({
+      status: 201,
+      message: "User created successfully",
+      data: user,
+    });
   } catch (error) {
     next(error);
   }

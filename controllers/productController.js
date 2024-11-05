@@ -14,7 +14,7 @@ const getAllProducts = async (req, res, next) => {
     res.status(200).json({
       status: 200,
       message: "Products found successfully",
-      data: { ...products },
+      data: products,
     });
   } catch (error) {
     next(error);

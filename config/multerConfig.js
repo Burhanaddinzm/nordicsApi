@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 const fs = require("fs");
 const { lookup } = require("mime-types");
 
-const maxFileSize = Number(process.env.MAX_FILE_SIZE);
+const maxFileSize = parseInt(process.env.MAX_FILE_SIZE);
 const allowedFileTypes = process.env.FILE_TYPES.split(",").map((type) =>
   type.trim()
 );
