@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { getAllProducts, seedProducts } = require("./productService");
+const { getAzTime } = require("../utils/dateTimeUtils");
 
 (async () => {
   const seedCarouselProducts = async () => {
@@ -33,3 +34,38 @@ const { getAllProducts, seedProducts } = require("./productService");
 
   await seedCarouselProducts();
 })();
+
+const updateSettings = async (settingsData) => {
+  const { aboutText, carouselProducts } = settingsData;
+  const settings = await getSettings();
+
+  if (aboutText) {
+    settings.aboutText = aboutText;
+  }
+};
+
+const getSettings = async () => {
+  const settings = await prisma.settings.findFirst({
+    include: {
+      carouselProducts: {
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          image: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  return {
+    aboutText: settings.aboutText,
+    carouselProducts: settings.carouselProducts,
+  };
+};
+
+module.exports = {
+  updateSettings,
+  getSettings,
+};
